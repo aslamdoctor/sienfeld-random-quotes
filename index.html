@@ -1,72 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Seinfeld Random Quotes Generator</title>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Seinfeld Random Quotes Generator</title>
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-</head>
-<body>
-	
-
-	<div id="app" class="container mt-4">
-		<h1 class="text-center mb-5 text-primary">Seinfeld Random Quotes Generator</h1>
-		<div class="card mb-5">
-			<div class="card-body text-center">
-				<h4 class="card-text mb-4">{{ quote.quote }}</h4>
-				<h5 class="card-title text-secondary">{{ quote.author }} (Season {{ quote.season }}, Episode {{ quote.episode }})</h5>
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+	</head>
+	<body>
+		<div id="app" class="container mt-4">
+			<h1 class="text-center mb-5 text-primary">
+				Seinfeld Random Quotes Generator
+			</h1>
+			<div class="card mb-5">
+				<div class="card-body text-center">
+					<h4 class="card-text mb-4">{{ quote.quote }}</h4>
+					<h5 class="card-title text-secondary">
+						{{ quote.author }} (Season {{ quote.season }}, Episode {{
+						quote.episode }})
+					</h5>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-md-6 col-lg-4">
+					<button
+						type="button"
+						class="btn btn-success btn-lg btn-block"
+						@click="fetchQuote()"
+					>
+						Next
+					</button>
+				</div>
 			</div>
 		</div>
-		<div class="row justify-content-center">
-			<div class="col-md-6 col-lg-4">
-				<button type="button" class="btn btn-success btn-lg btn-block" @click="fetchQuote()">Next</button>
-			</div>
-		</div>
-	</div>
 
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script>
+			var app = new Vue({
+				el: '#app',
 
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script>
-		var app = new Vue({
-			el: '#app',
-			
-			data: {
-				quote: {}
-			},
+				data: {
+					quote: {},
+				},
 
+				mounted() {
+					this.fetchQuote();
+				},
 
-			mounted(){
-				this.fetchQuote();
-			},
-			
-			methods: {
-				fetchQuote(){
-					var vm = this;
-					fetch('https://seinfeld-quotes.herokuapp.com/random')
-						.then(
-							function(response) {
-							if (response.status !== 200) {
-								console.log('Looks like there was a problem. Status Code: ' +
-								response.status);
-								return;
-							}
+				methods: {
+					fetchQuote() {
+						var vm = this;
+						fetch('./quotes.json')
+							.then(function (response) {
+								if (response.status !== 200) {
+									console.log(
+										'Looks like there was a problem. Status Code: ' +
+											response.status
+									);
+									return;
+								}
 
-							// Examine the text in the response
-							response.json().then(function(data) {
-								console.log(data);
-								vm.quote = data;
+								// Examine the text in the response
+								response.json().then(function (data) {
+									const randIndex = Math.floor(
+										Math.random() * data.quotes.length
+									);
+									const quote = data.quotes[randIndex];
+
+									vm.quote = quote;
+								});
+							})
+							.catch(function (err) {
+								console.log('Fetch Error :-S', err);
 							});
-							}
-						)
-						.catch(function(err) {
-							console.log('Fetch Error :-S', err);
-						});
-				}
-			}
-		})
-	</script>
-
-</body>
+					},
+				},
+			});
+		</script>
+	</body>
 </html>
